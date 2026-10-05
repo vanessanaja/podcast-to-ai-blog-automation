@@ -80,13 +80,7 @@
         0
       ],
       "id": "6faab408-b26d-4d8a-9cea-0d15eefc46dd",
-      "name": "Message a model",
-      "credentials": {
-        "openAiApi": {
-          "id": "CyP2pGt20oSEEMzF",
-          "name": "OpenAI account"
-        }
-      }
+      "name": "Message a model"
     },
     {
       "parameters": {
@@ -146,7 +140,6 @@
   "versionId": "7089a36d-665d-4e47-bacf-1aa5d6aece21",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "563a2fbbe88a3718b6eb2ca9fff3a1f60a314c1c0e6d915ca468ef015f9ed0f4"
   },
   "nodeGroups": [],
   "id": "qa0HOFzUgogRfhtX",
