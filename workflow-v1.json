@@ -140,6 +140,8 @@
   "versionId": "7089a36d-665d-4e47-bacf-1aa5d6aece21",
   "meta": {
     "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
   "id": "qa0HOFzUgogRfhtX",
   "tags": []
 }
