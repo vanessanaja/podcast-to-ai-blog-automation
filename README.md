@@ -83,12 +83,13 @@ Working:
 - Deterministic YouTube embed generation
 - Google Docs document creation
 - Automated content insertion into Google Docs
+- Transcript input validation
+- YouTube URL validation
+- Explicit Stop & Error handling for invalid input
 - Persistent local n8n environment using Docker
 
 Still to add:
 
-- Input validation
-- Error handling
 - Additional testing with realistic full-length podcast transcripts
 - Portfolio documentation and example output
 
