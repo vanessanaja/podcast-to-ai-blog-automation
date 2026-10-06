@@ -94,6 +94,42 @@
       ],
       "id": "94310d98-386a-4ddc-bb6a-758b4fa74582",
       "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "folderId": "YOUR_GOOGLE_DRIVE_FOLDER_ID",
+        "title": "={{$json.blog_title}}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "cedc9605-06e3-4c9b-bfa0-e8cbd0c73482",
+      "name": "Create a document"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{$json.id}}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ `BLOG TITLE\n\n${$('Code in JavaScript').first().json.blog_title}\n\n\nMETA TITLE\n\n${$('Code in JavaScript').first().json.meta_title}\n\n\nMETA DESCRIPTION\n\n${$('Code in JavaScript').first().json.meta_description}\n\n\nARTICLE HTML\n\n${$('Code in JavaScript').first().json.html}\n\n\nFAQ SCHEMA\n\n${$('Code in JavaScript').first().json.faq_schema}\n\n\nYOUTUBE URL\n\n${$('Code in JavaScript').first().json.youtube_url}` }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "8109a24d-4600-4cd3-9a51-d0eee71be93e",
+      "name": "Update a document"
     }
   ],
   "pinData": {},
@@ -130,6 +166,28 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -137,7 +195,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "7089a36d-665d-4e47-bacf-1aa5d6aece21",
+  "versionId": "8fd2a384-bc2d-4136-8a34-2505136538d6",
   "meta": {
     "templateCredsSetupCompleted": true
   },
