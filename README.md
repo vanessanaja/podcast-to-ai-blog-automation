@@ -1,6 +1,6 @@
 # Podcast to AI-Optimized Blog Automation
 
-An AI automation workflow built with n8n that transforms podcast transcripts into structured, publication-ready blog content using the OpenAI API.
+An AI automation workflow built with n8n that transforms podcast transcripts into structured, publication-ready blog content using the OpenAI API and automatically creates a Google Doc containing the finished content package.
 
 ## Current Workflow
 
@@ -10,7 +10,7 @@ The workflow currently:
 2. Accepts a YouTube URL associated with the episode.
 3. Accepts a list of relevant business resources or offers.
 4. Sends the transcript and resource context to an OpenAI model.
-5. Uses a strict JSON schema to return structured fields:
+5. Uses a strict JSON schema to return:
    - Blog title
    - Meta title
    - Meta description
@@ -20,12 +20,21 @@ The workflow currently:
    - Extract the YouTube video ID
    - Generate deterministic YouTube embed HTML
    - Insert the embed into the finished article
-7. Outputs structured content ready for downstream publishing or review.
+7. Creates a new Google Doc using the generated blog title.
+8. Populates the document with:
+   - Blog title
+   - Meta title
+   - Meta description
+   - Article HTML
+   - FAQ schema
+   - YouTube URL
 
 ## Tech Stack
 
 - n8n
 - OpenAI API
+- Google Docs API
+- Google Drive API
 - JSON Schema
 - JavaScript
 - Docker
@@ -35,42 +44,53 @@ The workflow currently:
 
 The workflow separates generative AI tasks from deterministic automation logic.
 
-OpenAI is used for tasks requiring language understanding and contextual judgment, such as:
+OpenAI is used for tasks requiring language understanding and contextual judgment, including:
 
-- Transforming an unstructured transcript into a structured article
-- Generating metadata
+- Transforming an unstructured transcript into structured article content
+- Generating search metadata
 - Creating FAQ content and schema
-- Determining whether provided resources are relevant enough to include
+- Determining whether provided resources are contextually relevant
 
-n8n and JavaScript handle predictable transformations such as generating the YouTube embed code.
+n8n and JavaScript handle predictable workflow logic and transformations, including:
 
-This reduces unnecessary reliance on the LLM and makes the workflow more predictable.
+- Extracting the YouTube video ID
+- Generating embed HTML
+- Creating the Google Doc
+- Passing structured output between workflow steps
+
+This reduces unnecessary reliance on the LLM and makes the automation more predictable and easier to troubleshoot.
 
 ## Security
 
 - API credentials are stored in n8n's credential manager.
-- API keys are not stored in the repository.
-- Exported n8n workflows are sanitized before being committed to GitHub.
+- API keys and OAuth credentials are not stored in the repository.
+- Credential references and environment-specific identifiers are removed from exported workflows before being committed.
+- The Google Drive folder ID is replaced with a placeholder in the public workflow export.
 
 ## Version 1 Status
 
 Working:
 
 - Manual transcript input
+- YouTube URL input
+- Relevant-resource input
 - OpenAI API integration
 - Structured JSON Schema output
 - HTML article generation
 - SEO metadata generation
 - FAQ schema generation
 - Relevant-resource context
-- YouTube embed generation
+- Deterministic YouTube embed generation
+- Google Docs document creation
+- Automated content insertion into Google Docs
 - Persistent local n8n environment using Docker
 
 Still to add:
 
-- Google Docs output
-- Validation and error handling
-- Testing with realistic full-length podcast transcripts
+- Input validation
+- Error handling
+- Additional testing with realistic full-length podcast transcripts
+- Portfolio documentation and example output
 
 ## Repository Files
 
@@ -79,4 +99,6 @@ Still to add:
 
 ## Project Goal
 
-This project is being built as a practical AI implementation portfolio project focused on converting an existing manual AI-assisted content workflow into a repeatable automation.
+This project converts an existing manual AI-assisted podcast-to-blog process into a repeatable automation.
+
+The project is designed to demonstrate practical AI implementation skills, including workflow design, API integration, structured LLM output, deterministic scripting, OAuth integration, testing, troubleshooting, and secure handling of credentials.
