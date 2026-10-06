@@ -76,7 +76,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.3,
       "position": [
-        448,
+        896,
         0
       ],
       "id": "6faab408-b26d-4d8a-9cea-0d15eefc46dd",
@@ -89,7 +89,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        816,
+        1264,
         0
       ],
       "id": "94310d98-386a-4ddc-bb6a-758b4fa74582",
@@ -103,7 +103,7 @@
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
       "position": [
-        1040,
+        1488,
         0
       ],
       "id": "cedc9605-06e3-4c9b-bfa0-e8cbd0c73482",
@@ -125,11 +125,104 @@
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
       "position": [
-        1264,
+        1712,
         0
       ],
       "id": "8109a24d-4600-4cd3-9a51-d0eee71be93e",
       "name": "Update a document"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "77bcaaf0-b359-4732-a143-b5412526a60d",
+              "leftValue": "={{ $json.transcript }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "66854a63-976c-4df5-a3a2-f14352eb5f10",
+      "name": "If Transcript Present?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "09755256-341b-4b26-b72f-80955f720cf8",
+              "leftValue": "={{$json.youtube_url}}",
+              "rightValue": "youtube",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "9768a110-a275-418d-9c1f-6e353640807c",
+      "name": "If Valid YouTube URL?"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Missing transcript"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        720,
+        144
+      ],
+      "id": "4a276115-bbfd-475c-b382-065023569a6b",
+      "name": "Stop and Error - Missing Transcript"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Invalid YouTube URL"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        944,
+        144
+      ],
+      "id": "dfdc3989-04d1-4f31-9214-0d84d5f223df",
+      "name": "Stop and Error - Invalid YouTube URL"
     }
   ],
   "pinData": {},
@@ -149,7 +242,7 @@
       "main": [
         [
           {
-            "node": "Message a model",
+            "node": "If Transcript Present?",
             "type": "main",
             "index": 0
           }
@@ -188,6 +281,42 @@
           }
         ]
       ]
+    },
+    "If Transcript Present?": {
+      "main": [
+        [
+          {
+            "node": "If Valid YouTube URL?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error - Missing Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Valid YouTube URL?": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error - Invalid YouTube URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -195,7 +324,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "8fd2a384-bc2d-4136-8a34-2505136538d6",
+  "versionId": "4bfb087c-b983-4040-97e3-576936c539ad",
   "meta": {
     "templateCredsSetupCompleted": true
   },
