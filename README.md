@@ -9,7 +9,7 @@ The workflow currently:
 1. Accepts a podcast transcript as input.
 2. Accepts a YouTube URL associated with the episode.
 3. Accepts a list of relevant business resources or offers.
-4. Validates that a transcript is present before processing.
+4. Validates that the transcript contains non-whitespace content before processing.
 5. Parses and validates supported YouTube URL formats, including:
    - Standard YouTube watch URLs
    - `youtu.be` URLs
@@ -23,12 +23,14 @@ The workflow currently:
    - Meta description
    - Blog HTML
    - FAQ schema
-10. Uses JavaScript in an n8n Code node to:
+10. Validates the structured OpenAI response before downstream processing.
+11. Uses JavaScript in an n8n Code node to:
+    - Confirm all required structured fields are present and non-empty
     - Reuse the already-validated YouTube video ID
     - Generate deterministic YouTube embed HTML
     - Insert the embed into the finished article
-11. Creates a new Google Doc using the generated blog title.
-12. Populates the document with:
+12. Creates a new Google Doc using the generated blog title.
+13. Populates the document with:
     - Blog title
     - Meta title
     - Meta description
@@ -45,7 +47,8 @@ Manual Trigger
 → YouTube URL Parsing
 → YouTube Validation
 → OpenAI Structured Content Generation
-→ JavaScript Formatting + YouTube Embed
+→ OpenAI Response Validation + JavaScript Formatting
+→ YouTube Embed Generation
 → Google Docs Creation
 → Google Docs Update
 ```
@@ -75,29 +78,41 @@ OpenAI is used for tasks requiring language understanding and contextual judgmen
 n8n and JavaScript handle predictable workflow logic and transformations, including:
 
 - Validating required input
+- Rejecting blank or whitespace-only transcripts
 - Parsing supported YouTube URL formats
 - Extracting and storing the validated YouTube video ID
 - Reusing the validated video ID downstream rather than parsing the URL multiple times
+- Validating the structured OpenAI response before document creation
 - Generating embed HTML
 - Creating the Google Doc
 - Passing structured output between workflow steps
-- Stopping execution when required input is invalid
+- Stopping execution when required input or output is invalid
 
 This reduces unnecessary reliance on the LLM, avoids duplicate parsing logic, and makes the automation more predictable and easier to troubleshoot.
 
-## Input Validation and Error Handling
+## Input and Output Validation
 
-The workflow performs validation before sending content to the OpenAI API.
+The workflow performs validation both before and after the OpenAI API call.
 
-Current validation includes:
+Input validation includes:
 
-- Transcript must be present
+- Transcript must contain non-whitespace content
 - YouTube URL must match a supported YouTube format
-- YouTube video ID must be a valid 11-character ID
+- YouTube video ID must match the expected 11-character format
 
-If validation fails, the workflow stops with an explicit error rather than continuing with incomplete or invalid data.
+If input validation fails, the workflow stops with an explicit error rather than making an unnecessary OpenAI API call.
 
-This also prevents unnecessary API calls when the input is not usable.
+The structured OpenAI response is also validated before Google Docs processing begins.
+
+The workflow confirms that the response contains non-empty string values for:
+
+- `blog_title`
+- `meta_title`
+- `meta_description`
+- `html`
+- `faq_schema`
+
+If the expected structured content is missing or incomplete, the workflow throws a clear error instead of creating an incomplete document.
 
 ## Google Docs Output
 
@@ -130,6 +145,7 @@ Working:
 - YouTube URL input
 - Relevant-resource input
 - Transcript input validation
+- Whitespace-only transcript rejection
 - YouTube URL parsing
 - YouTube watch URL support
 - `youtu.be` URL support
@@ -138,6 +154,8 @@ Working:
 - Explicit Stop & Error handling for invalid input
 - OpenAI API integration
 - Structured JSON Schema output
+- Structured OpenAI response validation
+- Required-field validation before downstream processing
 - HTML article generation
 - SEO metadata generation
 - FAQ schema generation
@@ -151,7 +169,6 @@ Working:
 
 Still to add:
 
-- Validation of the structured OpenAI response before downstream processing
 - Additional testing with realistic full-length podcast transcripts
 - Portfolio screenshots
 - Sanitized example output
@@ -176,6 +193,7 @@ The project is designed to demonstrate practical AI implementation skills, inclu
 - JSON Schema configuration
 - JavaScript transformations
 - Input validation
+- Output validation
 - Error handling
 - OAuth integration
 - Google Docs automation
