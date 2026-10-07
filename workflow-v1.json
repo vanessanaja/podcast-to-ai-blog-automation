@@ -84,7 +84,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const openAIResult = $input.first().json;\n\n// Structured content returned by OpenAI\nconst content = openAIResult.output[0].content[0].text;\n\n// Original YouTube URL from the Edit Fields node\nconst youtubeUrl = $('Edit Fields').first().json.youtube_url;\n\n// Extract the YouTube video ID\nlet videoId = '';\n\nif (youtubeUrl.includes('watch?v=')) {\n  videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];\n} else if (youtubeUrl.includes('youtu.be/')) {\n  videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];\n}\n\n// Build the embed HTML\nconst youtubeEmbed = videoId\n  ? `<div class=\"youtube-embed\">\n      <iframe\n        width=\"560\"\n        height=\"315\"\n        src=\"https://www.youtube.com/embed/${videoId}\"\n        title=\"YouTube video player\"\n        frameborder=\"0\"\n        allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\"\n        allowfullscreen>\n      </iframe>\n    </div>`\n  : '';\n\n// Add the embed to the beginning of the blog HTML\nconst finalHtml = youtubeEmbed + content.html;\n\nreturn [\n  {\n    json: {\n      blog_title: content.blog_title,\n      meta_title: content.meta_title,\n      meta_description: content.meta_description,\n      html: finalHtml,\n      faq_schema: content.faq_schema,\n      youtube_url: youtubeUrl\n    }\n  }\n];"
+        "jsCode": "const openAIResult = $input.first().json;\n\n// Structured content returned by OpenAI\nconst content = openAIResult.output[0].content[0].text;\n\n// Reuse the already-validated YouTube data\nconst youtubeUrl = $('Edit Fields').first().json.youtube_url;\nconst videoId = $('Parse YouTube URL').first().json.youtube_video_id;\n\nif (!videoId) {\n  throw new Error('Validated YouTube video ID is missing');\n}\n\n// Build the embed HTML from the validated ID\nconst youtubeEmbed = `<div class=\"youtube-embed\">\n  <iframe\n    width=\"560\"\n    height=\"315\"\n    src=\"https://www.youtube.com/embed/${videoId}\"\n    title=\"YouTube video player\"\n    frameborder=\"0\"\n    allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\"\n    allowfullscreen>\n  </iframe>\n</div>`;\n\n// Add the embed to the beginning of the blog HTML\nconst finalHtml = youtubeEmbed + content.html;\n\nreturn [\n  {\n    json: {\n      blog_title: content.blog_title,\n      meta_title: content.meta_title,\n      meta_description: content.meta_description,\n      html: finalHtml,\n      faq_schema: content.faq_schema,\n      youtube_url: youtubeUrl\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -348,7 +348,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "4c31c650-098d-4a9b-8613-5b7890f91537",
+  "versionId": "720de74e-8138-46cc-9e73-925c09cff1fa",
   "meta": {
     "templateCredsSetupCompleted": true
   },
