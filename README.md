@@ -9,25 +9,46 @@ The workflow currently:
 1. Accepts a podcast transcript as input.
 2. Accepts a YouTube URL associated with the episode.
 3. Accepts a list of relevant business resources or offers.
-4. Sends the transcript and resource context to an OpenAI model.
-5. Uses a strict JSON schema to return:
+4. Validates that a transcript is present before processing.
+5. Parses and validates supported YouTube URL formats, including:
+   - Standard YouTube watch URLs
+   - `youtu.be` URLs
+   - YouTube Shorts URLs
+6. Extracts and stores the validated 11-character YouTube video ID.
+7. Stops the workflow with a clear error if the transcript is missing or the YouTube URL is invalid.
+8. Sends the transcript and resource context to an OpenAI model.
+9. Uses a strict JSON schema to return:
    - Blog title
    - Meta title
    - Meta description
    - Blog HTML
    - FAQ schema
-6. Uses JavaScript in an n8n Code node to:
-   - Extract the YouTube video ID
-   - Generate deterministic YouTube embed HTML
-   - Insert the embed into the finished article
-7. Creates a new Google Doc using the generated blog title.
-8. Populates the document with:
-   - Blog title
-   - Meta title
-   - Meta description
-   - Article HTML
-   - FAQ schema
-   - YouTube URL
+10. Uses JavaScript in an n8n Code node to:
+    - Reuse the already-validated YouTube video ID
+    - Generate deterministic YouTube embed HTML
+    - Insert the embed into the finished article
+11. Creates a new Google Doc using the generated blog title.
+12. Populates the document with:
+    - Blog title
+    - Meta title
+    - Meta description
+    - Article HTML
+    - FAQ schema
+    - YouTube URL
+
+## Workflow Flow
+
+```text
+Manual Trigger
+→ Edit Fields
+→ Transcript Validation
+→ YouTube URL Parsing
+→ YouTube Validation
+→ OpenAI Structured Content Generation
+→ JavaScript Formatting + YouTube Embed
+→ Google Docs Creation
+→ Google Docs Update
+```
 
 ## Tech Stack
 
@@ -53,12 +74,45 @@ OpenAI is used for tasks requiring language understanding and contextual judgmen
 
 n8n and JavaScript handle predictable workflow logic and transformations, including:
 
-- Extracting the YouTube video ID
+- Validating required input
+- Parsing supported YouTube URL formats
+- Extracting and storing the validated YouTube video ID
+- Reusing the validated video ID downstream rather than parsing the URL multiple times
 - Generating embed HTML
 - Creating the Google Doc
 - Passing structured output between workflow steps
+- Stopping execution when required input is invalid
 
-This reduces unnecessary reliance on the LLM and makes the automation more predictable and easier to troubleshoot.
+This reduces unnecessary reliance on the LLM, avoids duplicate parsing logic, and makes the automation more predictable and easier to troubleshoot.
+
+## Input Validation and Error Handling
+
+The workflow performs validation before sending content to the OpenAI API.
+
+Current validation includes:
+
+- Transcript must be present
+- YouTube URL must match a supported YouTube format
+- YouTube video ID must be a valid 11-character ID
+
+If validation fails, the workflow stops with an explicit error rather than continuing with incomplete or invalid data.
+
+This also prevents unnecessary API calls when the input is not usable.
+
+## Google Docs Output
+
+The workflow automatically creates a Google Doc for each successful run.
+
+The document includes:
+
+- Blog title
+- Meta title
+- Meta description
+- Article HTML
+- FAQ schema
+- Original YouTube URL
+
+The article is currently stored as literal HTML source inside the Google Doc. This is intentional for the current version because the output is designed to be reviewed before being copied into a publishing platform or CMS.
 
 ## Security
 
@@ -66,6 +120,7 @@ This reduces unnecessary reliance on the LLM and makes the automation more predi
 - The current public workflow export omits n8n credential references and instance-specific metadata.
 - Environment-specific values, such as the Google Drive folder ID, are replaced with placeholders before publication.
 - Workflow exports are reviewed and validated before being committed.
+- Public repository files contain no API keys or OAuth secrets.
 
 ## Version 1 Status
 
@@ -74,6 +129,13 @@ Working:
 - Manual transcript input
 - YouTube URL input
 - Relevant-resource input
+- Transcript input validation
+- YouTube URL parsing
+- YouTube watch URL support
+- `youtu.be` URL support
+- YouTube Shorts URL support
+- YouTube video ID validation
+- Explicit Stop & Error handling for invalid input
 - OpenAI API integration
 - Structured JSON Schema output
 - HTML article generation
@@ -81,25 +143,46 @@ Working:
 - FAQ schema generation
 - Relevant-resource context
 - Deterministic YouTube embed generation
+- Reuse of validated YouTube video ID downstream
 - Google Docs document creation
 - Automated content insertion into Google Docs
-- Transcript input validation
-- YouTube URL validation
-- Explicit Stop & Error handling for invalid input
 - Persistent local n8n environment using Docker
+- Sanitized GitHub workflow export
 
 Still to add:
 
+- Validation of the structured OpenAI response before downstream processing
 - Additional testing with realistic full-length podcast transcripts
-- Portfolio documentation and example output
+- Portfolio screenshots
+- Sanitized example output
+- Setup and import instructions for reproducing the workflow
+- Final portfolio documentation
 
 ## Repository Files
 
 - `workflow-v1.json` - sanitized exported n8n workflow
 - `README.md` - project documentation
+- `.gitignore` - excludes local credentials, environment files, n8n data, and other local-only files
 
 ## Project Goal
 
 This project converts an existing manual AI-assisted podcast-to-blog process into a repeatable automation.
 
-The project is designed to demonstrate practical AI implementation skills, including workflow design, API integration, structured LLM output, deterministic scripting, OAuth integration, testing, troubleshooting, and secure handling of credentials.
+The project is designed to demonstrate practical AI implementation skills, including:
+
+- Workflow design
+- API integration
+- Structured LLM output
+- JSON Schema configuration
+- JavaScript transformations
+- Input validation
+- Error handling
+- OAuth integration
+- Google Docs automation
+- Docker-based local workflow execution
+- Testing and troubleshooting
+- Secure credential handling
+- Git and GitHub version control
+- AI-assisted development and code review
+
+The goal is not to automate every part of publishing. The current version focuses on producing a reliable, structured content package that can be reviewed before publication.
