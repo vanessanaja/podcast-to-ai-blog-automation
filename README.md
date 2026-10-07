@@ -62,10 +62,12 @@ This reduces unnecessary reliance on the LLM and makes the automation more predi
 
 ## Security
 
-- API credentials are stored in n8n's credential manager.
-- API keys and OAuth credentials are not stored in the repository.
-- Credential references and environment-specific identifiers are removed from exported workflows before being committed.
-- The Google Drive folder ID is replaced with a placeholder in the public workflow export.
+## Security
+
+- API keys and OAuth secrets are stored outside the repository.
+- The current public workflow export omits n8n credential references and instance-specific metadata.
+- Environment-specific values, such as the Google Drive folder ID, are replaced with placeholders before publication.
+- Workflow exports are reviewed and validated before being committed.
 
 ## Version 1 Status
 
