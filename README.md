@@ -62,8 +62,6 @@ This reduces unnecessary reliance on the LLM and makes the automation more predi
 
 ## Security
 
-## Security
-
 - API keys and OAuth secrets are stored outside the repository.
 - The current public workflow export omits n8n credential references and instance-specific metadata.
 - Environment-specific values, such as the Google Drive folder ID, are replaced with placeholders before publication.
