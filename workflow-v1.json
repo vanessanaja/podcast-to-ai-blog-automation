@@ -84,7 +84,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const openAIResult = $input.first().json;\n\n// Structured content returned by OpenAI\nconst content = openAIResult.output[0].content[0].text;\n\n// Reuse the already-validated YouTube data\nconst youtubeUrl = $('Edit Fields').first().json.youtube_url;\nconst videoId = $('Parse YouTube URL').first().json.youtube_video_id;\n\nif (!videoId) {\n  throw new Error('Validated YouTube video ID is missing');\n}\n\n// Build the embed HTML from the validated ID\nconst youtubeEmbed = `<div class=\"youtube-embed\">\n  <iframe\n    width=\"560\"\n    height=\"315\"\n    src=\"https://www.youtube.com/embed/${videoId}\"\n    title=\"YouTube video player\"\n    frameborder=\"0\"\n    allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\"\n    allowfullscreen>\n  </iframe>\n</div>`;\n\n// Add the embed to the beginning of the blog HTML\nconst finalHtml = youtubeEmbed + content.html;\n\nreturn [\n  {\n    json: {\n      blog_title: content.blog_title,\n      meta_title: content.meta_title,\n      meta_description: content.meta_description,\n      html: finalHtml,\n      faq_schema: content.faq_schema,\n      youtube_url: youtubeUrl\n    }\n  }\n];"
+        "jsCode": "const openAIResult = $input.first().json;\n\n// Validate the OpenAI response structure\nconst content = openAIResult?.output?.[0]?.content?.[0]?.text;\n\nif (!content || typeof content !== 'object') {\n  throw new Error('OpenAI response is missing structured content');\n}\n\nconst requiredFields = [\n  'blog_title',\n  'meta_title',\n  'meta_description',\n  'html',\n  'faq_schema'\n];\n\nfor (const field of requiredFields) {\n  if (typeof content[field] !== 'string' || !content[field].trim()) {\n    throw new Error(`OpenAI response is missing required field: ${field}`);\n  }\n}\n\n// Reuse the already-validated YouTube data\nconst youtubeUrl = $('Edit Fields').first().json.youtube_url;\nconst videoId = $('Parse YouTube URL').first().json.youtube_video_id;\n\nif (!videoId) {\n  throw new Error('Validated YouTube video ID is missing');\n}\n\n// Build the embed HTML from the validated ID\nconst youtubeEmbed = `<div class=\"youtube-embed\">\n  <iframe\n    width=\"560\"\n    height=\"315\"\n    src=\"https://www.youtube.com/embed/${videoId}\"\n    title=\"YouTube video player\"\n    frameborder=\"0\"\n    allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\"\n    allowfullscreen>\n  </iframe>\n</div>`;\n\n// Add the embed to the beginning of the blog HTML\nconst finalHtml = youtubeEmbed + content.html;\n\nreturn [\n  {\n    json: {\n      blog_title: content.blog_title,\n      meta_title: content.meta_title,\n      meta_description: content.meta_description,\n      html: finalHtml,\n      faq_schema: content.faq_schema,\n      youtube_url: youtubeUrl\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -143,7 +143,7 @@
           "conditions": [
             {
               "id": "77bcaaf0-b359-4732-a143-b5412526a60d",
-              "leftValue": "={{ $json.transcript }}",
+              "leftValue": "={{ String($json.transcript ?? '').trim() }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
@@ -348,7 +348,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "720de74e-8138-46cc-9e73-925c09cff1fa",
+  "versionId": "142beb60-e3ee-404d-8bf8-2b87882ad9ab",
   "meta": {
     "templateCredsSetupCompleted": true
   },
