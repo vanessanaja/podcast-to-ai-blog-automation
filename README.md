@@ -192,7 +192,7 @@ Working:
 - HTML article generation
 - SEO metadata generation
 - FAQ schema generation
-- Relevant-resource context
+- Contextual selection and insertion of relevant business resources
 - Deterministic YouTube embed generation
 - Reuse of validated YouTube video ID downstream
 - Google Docs document creation
