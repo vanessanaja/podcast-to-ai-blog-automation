@@ -2,6 +2,12 @@
 
 An AI automation workflow built with n8n that transforms podcast transcripts into structured, publication-ready blog content using the OpenAI API and automatically creates a Google Doc containing the finished content package.
 
+## Workflow
+
+![Successful n8n workflow execution](docs/workflow-success.png)
+
+The screenshot above shows a successful end-to-end execution, including transcript validation, YouTube URL validation, OpenAI structured content generation, JavaScript transformation, and Google Docs output.
+
 ## Current Workflow
 
 The workflow currently:
@@ -90,6 +96,33 @@ n8n and JavaScript handle predictable workflow logic and transformations, includ
 
 This reduces unnecessary reliance on the LLM, avoids duplicate parsing logic, and makes the automation more predictable and easier to troubleshoot.
 
+## Prompt and Voice Design
+
+The OpenAI prompt is designed to constrain both the content and the writing style of the generated article.
+
+Content instructions require the model to:
+
+- Use only information supported by the podcast transcript
+- Avoid inventing facts, statistics, quotes, claims, URLs, products, or resources
+- Use only the business resources explicitly provided to the workflow
+- Return a predictable structured content package using a strict JSON schema
+
+The prompt also includes writing-style guidance intended to preserve the speaker's natural voice rather than defaulting to generic AI-generated business prose.
+
+Current style requirements include:
+
+- Preserve the speaker's natural voice, point of view, and level of directness
+- Keep the writing conversational
+- Use natural contractions where appropriate
+- Avoid em dashes
+- Avoid generic AI-style transitions and overly polished corporate language
+- Avoid making the source material more formal than necessary
+- Improve organization and readability without flattening the speaker's personality
+
+These requirements were added after realistic workflow testing showed that technically correct output could still lose some of the source speaker's voice.
+
+A future enhancement could provide additional writing samples dynamically through retrieval or another voice-reference system. The current version intentionally uses prompt-based voice guidance to keep the workflow simple and reproducible.
+
 ## Input and Output Validation
 
 The workflow performs validation both before and after the OpenAI API call.
@@ -169,18 +202,15 @@ Working:
 
 Still to add:
 
-- Additional testing with realistic full-length podcast transcripts
-- Portfolio screenshots
-- Sanitized example output
-- Setup and import instructions for reproducing the workflow
-- Final portfolio documentation
+- Final Codex repository audit
 
 ## Repository Files
 
 - `workflow-v1.json` - sanitized exported n8n workflow
 - `README.md` - project documentation
 - `.gitignore` - excludes local credentials, environment files, n8n data, and other local-only files
-- `sample-output.md` - sanitized example of the workflow's generated content package
+- `sample-output.md` - sanitized example of the generated content package
+- `docs/workflow-success.png` - screenshot of a successful end-to-end workflow execution
 
 ## Setup and Import
 
