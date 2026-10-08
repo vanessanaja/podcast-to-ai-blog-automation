@@ -182,6 +182,110 @@ Still to add:
 - `.gitignore` - excludes local credentials, environment files, n8n data, and other local-only files
 - `sample-output.md` - sanitized example of the workflow's generated content package
 
+## Setup and Import
+
+### Prerequisites
+
+To run this workflow locally, you will need:
+
+- Docker
+- n8n
+- An OpenAI API account and API key
+- A Google Cloud project
+- Google Drive API enabled
+- Google Docs API enabled
+- Google OAuth credentials configured for n8n
+
+### 1. Start n8n
+
+This project was developed using n8n running locally in Docker with a persistent volume:
+
+```bash
+docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
+```
+
+Then open:
+
+```text
+http://localhost:5678
+```
+
+### 2. Import the Workflow
+
+1. Download or clone this repository.
+2. Open n8n.
+3. Import `workflow-v1.json`.
+4. Because the public workflow export is sanitized, credential references will need to be configured after import.
+
+### 3. Configure OpenAI
+
+Create or connect an OpenAI API credential in n8n and assign it to the OpenAI node.
+
+The workflow uses structured output with a strict JSON schema to generate:
+
+- Blog title
+- Meta title
+- Meta description
+- Article HTML
+- FAQ schema
+
+### 4. Configure Google OAuth
+
+Create a Google Cloud project and enable:
+
+- Google Drive API
+- Google Docs API
+
+Create an OAuth web application and use the n8n OAuth callback URL:
+
+```text
+http://localhost:5678/rest/oauth2-credential/callback
+```
+
+Connect the resulting Google credential to both Google Docs nodes in the workflow.
+
+### 5. Configure the Google Drive Folder
+
+The public workflow contains the placeholder:
+
+```text
+YOUR_GOOGLE_DRIVE_FOLDER_ID
+```
+
+Replace this with the ID of the Google Drive folder where generated documents should be created.
+
+### 6. Add Test Inputs
+
+The `Edit Fields` node accepts:
+
+- `transcript`
+- `youtube_url`
+- `relevant_links`
+
+The transcript should contain actual non-whitespace content.
+
+Supported YouTube URL formats include:
+
+- Standard watch URLs
+- `youtu.be` URLs
+- YouTube Shorts URLs
+
+### 7. Run the Workflow
+
+Click **Execute workflow** in n8n.
+
+A successful run will:
+
+1. Validate the transcript.
+2. Parse and validate the YouTube URL.
+3. Send the transcript and resource context to OpenAI.
+4. Validate the structured AI response.
+5. Generate the YouTube embed using deterministic JavaScript.
+6. Create a Google Doc.
+7. Insert the complete generated content package into the document.
+
+The Google Doc contains literal HTML source for review before publication.
+
 ## Project Goal
 
 This project converts an existing manual AI-assisted podcast-to-blog process into a repeatable automation.
