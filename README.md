@@ -180,6 +180,7 @@ Still to add:
 - `workflow-v1.json` - sanitized exported n8n workflow
 - `README.md` - project documentation
 - `.gitignore` - excludes local credentials, environment files, n8n data, and other local-only files
+- `sample-output.md` - sanitized example of the workflow's generated content package
 
 ## Project Goal
 
