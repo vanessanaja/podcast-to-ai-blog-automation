@@ -200,10 +200,6 @@ Working:
 - Persistent local n8n environment using Docker
 - Sanitized GitHub workflow export
 
-Still to add:
-
-- Final Codex repository audit
-
 ## Repository Files
 
 - `workflow-v1.json` - sanitized exported n8n workflow
